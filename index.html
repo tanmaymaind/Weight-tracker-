@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Tracking Weight</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<header class="topbar">
+  <div>
+    <h1 id="appTitle">Tracking Weight</h1>
+    <p class="subtitle" data-t="subtitle">Indian food calorie &amp; weight loss tracker</p>
+  </div>
+  <div class="lang-switch" role="group" aria-label="Language">
+    <button type="button" data-lang="en">English</button>
+    <button type="button" data-lang="hi">हिंदी</button>
+    <button type="button" data-lang="mr">मराठी</button>
+  </div>
+</header>
+
+<main>
+  <!-- SETUP / PROFILE -->
+  <section id="tab-setup" class="tab-page">
+    <div class="card">
+      <h2 data-t="setupTitle">Apna Plan Banao</h2>
+      <p class="muted" data-t="setupSub">Ek baar details bharo, app aapka daily calorie target bana dega.</p>
+      <form id="profileForm">
+        <label data-t="age">Age (saal)</label>
+        <input id="inAge" type="number" min="12" max="100" inputmode="numeric" required>
+
+        <label data-t="gender">Gender</label>
+        <select id="inGender">
+          <option value="male" data-t="male">Male</option>
+          <option value="female" data-t="female">Female</option>
+          <option value="other" data-t="other">Other</option>
+        </select>
+
+        <label data-t="height">Height (feet + inch)</label>
+        <div class="chips" id="heightChips"></div>
+        <div class="row">
+          <select id="inFt" aria-label="Feet"></select>
+          <select id="inIn" aria-label="Inches"></select>
+        </div>
+
+        <label data-t="weight">Current Weight (kg)</label>
+        <input id="inWeight" type="number" min="25" max="300" step="0.1" inputmode="decimal" required>
+
+        <label data-t="targetWeight">Target Weight (kg)</label>
+        <input id="inTarget" type="number" min="25" max="300" step="0.1" inputmode="decimal" required>
+
+        <label data-t="activity">Activity Level</label>
+        <select id="inActivity">
+          <option value="1.2" data-t="actSed">Sedentary (zyada baithna)</option>
+          <option value="1.375" data-t="actLight">Light active (halki walk)</option>
+          <option value="1.55" data-t="actMod" selected>Moderate active (roz walk / kaam)</option>
+          <option value="1.725" data-t="actHigh">Very active (heavy kaam / training)</option>
+        </select>
+
+        <button type="submit" class="btn-primary" data-t="makePlan">Mera Plan Banao</button>
+      </form>
+      <div id="planResult" class="plan-result" hidden></div>
+    </div>
+  </section>
+
+  <!-- TODAY -->
+  <section id="tab-today" class="tab-page">
+    <div class="card center">
+      <h2 data-t="todayTitle">Aaj Ka Hisab</h2>
+      <div class="ring-wrap">
+        <svg viewBox="0 0 200 200" class="ring" aria-hidden="true">
+          <circle cx="100" cy="100" r="84" class="ring-bg"></circle>
+          <circle id="calRing" cx="100" cy="100" r="84" class="ring-fg"></circle>
+        </svg>
+        <div class="ring-text">
+          <div class="ring-big" id="calLeft">0</div>
+          <div class="muted" data-t="calLeftLabel">calories bache</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div><b id="calEaten">0</b><span data-t="eaten">khaaye</span></div>
+        <div><b id="calTarget">0</b><span data-t="target">target</span></div>
+        <div><b id="exBurned">0</b><span data-t="burned">burned</span></div>
+      </div>
+      <div class="bar-row">
+        <span data-t="protein">Protein</span>
+        <b id="protText">0 / 0g</b>
+      </div>
+      <div class="bar"><div id="protBar" class="bar-fill"></div></div>
+    </div>
+
+    <div class="card">
+      <h3 data-t="water">Paani (Water)</h3>
+      <div class="glasses" id="waterGlasses"></div>
+      <p class="muted small" id="waterText"></p>
+    </div>
+
+    <div class="card">
+      <h3 data-t="todayFood">Aaj Khaaya Hua</h3>
+      <ul id="todayFoodList" class="entry-list"></ul>
+      <p class="muted small" id="noFoodMsg" data-t="noFoodYet">Abhi kuch add nahi kiya.</p>
+    </div>
+
+    <div class="card">
+      <h3 data-t="todayEx">Aaj Ki Exercise</h3>
+      <ul id="todayExList" class="entry-list"></ul>
+      <p class="muted small" id="noExMsg" data-t="noExYet">Abhi koi exercise log nahi ki.</p>
+    </div>
+  </section>
+
+  <!-- FOOD -->
+  <section id="tab-food" class="tab-page">
+    <div class="card">
+      <h2 data-t="addFood">Khana Add Karo</h2>
+      <input id="foodSearch" type="search" data-t-ph="searchFood" placeholder="Khana dhoondo… (roti, dal, dosa…)">
+      <div class="portion-row" role="group" aria-label="Portion">
+        <button type="button" data-portion="0.5">½x</button>
+        <button type="button" data-portion="1" class="active">1x</button>
+        <button type="button" data-portion="1.5">1.5x</button>
+        <button type="button" data-portion="2">2x</button>
+      </div>
+      <div id="foodList"></div>
+    </div>
+    <div class="card">
+      <h3 data-t="customFood">Apna Khana Add Karo</h3>
+      <input id="cfName" type="text" data-t-ph="cfNamePh" placeholder="Khane ka naam">
+      <div class="row">
+        <input id="cfCal" type="number" min="0" inputmode="numeric" data-t-ph="cfCalPh" placeholder="Calories">
+        <input id="cfProt" type="number" min="0" step="0.1" inputmode="decimal" data-t-ph="cfProtPh" placeholder="Protein (g)">
+      </div>
+      <button type="button" id="cfAdd" class="btn-primary" data-t="addBtn">Add Karo</button>
+    </div>
+  </section>
+
+  <!-- EXERCISE -->
+  <section id="tab-exercise" class="tab-page">
+    <div class="card">
+      <h2 data-t="exercise">Exercise</h2>
+      <p class="muted" data-t="exNote">Calories aapke weight se calculate hoti hain.</p>
+      <label data-t="duration">Kitne minute?</label>
+      <input id="exMinutes" type="number" min="1" max="600" value="30" inputmode="numeric">
+      <div id="exList"></div>
+    </div>
+  </section>
+
+  <!-- RECIPES -->
+  <section id="tab-recipes" class="tab-page">
+    <div class="card">
+      <h2 data-t="recipes">Ghar Ki Recipes</h2>
+      <p class="muted" data-t="recNote">Jo cheezein ghar par hain, un par tick karo.</p>
+      <div id="ingList" class="chips wrap"></div>
+      <div id="recipeList"></div>
+    </div>
+  </section>
+
+  <!-- PROGRESS -->
+  <section id="tab-progress" class="tab-page">
+    <div class="card">
+      <h2 data-t="progress">Progress</h2>
+      <div class="bar-row">
+        <span data-t="goalProg">Goal ki taraf</span>
+        <b id="goalText"></b>
+      </div>
+      <div class="bar"><div id="goalBar" class="bar-fill green"></div></div>
+      <div class="row">
+        <input id="wKg" type="number" min="25" max="300" step="0.1" inputmode="decimal" data-t-ph="weightPh" placeholder="Weight (kg)">
+        <button type="button" id="wAdd" class="btn-primary" data-t="addBtn">Add Karo</button>
+      </div>
+      <canvas id="weightChart" width="320" height="160"></canvas>
+      <ul id="weightList" class="entry-list"></ul>
+      <button type="button" id="editProfileBtn" class="btn-ghost" data-t="editProfile">Profile Edit Karo</button>
+    </div>
+
+    <div class="card">
+      <h3 data-t="photoTitle">Monthly Body Photo</h3>
+      <p class="muted small" data-t="photoNote">Har mahine 1 photo lo. Photo sirf aapke browser mein save hoti hai. Photo comparison sirf visual hai — ye koi medical measurement nahi hai.</p>
+      <p class="muted small" id="photoMonthLabel"></p>
+      <input id="photoFile" type="file" accept="image/*">
+      <input id="photoNote" type="text" data-t-ph="photoNotePh" placeholder="Note (optional)">
+      <button type="button" id="photoSave" class="btn-primary" data-t="savePhoto">Photo Save Karo</button>
+      <div id="photoTimeline"></div>
+      <div id="photoCompare"></div>
+    </div>
+  </section>
+</main>
+
+<nav class="tabbar" aria-label="Sections">
+  <button type="button" data-tab="today" data-t="navToday">Today</button>
+  <button type="button" data-tab="food" data-t="navFood">Food</button>
+  <button type="button" data-tab="exercise" data-t="navEx">Exercise</button>
+  <button type="button" data-tab="recipes" data-t="navRec">Recipes</button>
+  <button type="button" data-tab="progress" data-t="navProg">Progress</button>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
